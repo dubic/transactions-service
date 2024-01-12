@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 @Service
 public class TransactionService {
@@ -36,20 +36,18 @@ public class TransactionService {
             this.referenceTimeStamp = transaction.time();
             return true;
         }
-//        LocalDateTime startTime = getOrStartReferenceTimestamp(transaction.time());
-        System.out.println("Start time :: "+this.referenceTimeStamp);
 
+        //calculate time difference in seconds
+        long txnTimeDiffSecs = Duration.between(this.referenceTimeStamp, transaction.time()).getSeconds();
+
+        System.out.println("Ref start time :: "+this.referenceTimeStamp);
+        System.out.println("Time diff :: "+txnTimeDiffSecs);
+
+        return txnTimeDiffSecs <= 30;
         // Add 30 seconds to the reference start date and time
-        LocalDateTime futureDateTime = this.referenceTimeStamp.plusSeconds(30);
-        return transaction.time().isAfter(this.referenceTimeStamp) && transaction.time().isBefore(futureDateTime);
+//        LocalDateTime futureDateTime = this.referenceTimeStamp.plusSeconds(30);
+//        return transaction.time().isAfter(this.referenceTimeStamp) && transaction.time().isBefore(futureDateTime);
     }
-
-//    private LocalDateTime getOrStartReferenceTimestamp(LocalDateTime transactionTime) {
-//        if (this.referenceTimeStamp == null) {
-//            this.referenceTimeStamp = transactionTime;
-//        }
-//        return this.referenceTimeStamp;
-//    }
 
     private void updateStatistics(Transaction transaction) {
         this.statistics.update(transaction.amount());
@@ -63,5 +61,9 @@ public class TransactionService {
 //        reset statistics and reference time
         this.statistics = new Statistics();
         this.referenceTimeStamp = null;
+    }
+
+    public LocalDateTime getReferenceStartTime() {
+        return this.referenceTimeStamp;
     }
 }

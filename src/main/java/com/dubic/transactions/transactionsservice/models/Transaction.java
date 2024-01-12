@@ -15,6 +15,12 @@ public record Transaction(BigDecimal amount, LocalDateTime time) {
 
     public static Transaction createTransaction(TransactionRequest request)
             throws NumberFormatException, DateTimeParseException {
+        if (request.getAmount() == null) {
+            throw new NullPointerException("Amount must be supplied");
+        }
+        if (request.getTimestamp() == null) {
+            throw new NullPointerException("Timestamp must be supplied");
+        }
         BigDecimal txnAmount = new BigDecimal(request.getAmount());
         LocalDateTime txnDate = parseTransactionDate(request.getTimestamp());
         return new Transaction(txnAmount, txnDate);

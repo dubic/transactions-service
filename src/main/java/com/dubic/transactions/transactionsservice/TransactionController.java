@@ -35,6 +35,8 @@ public class TransactionController {
         } catch (DateTimeParseException | IllegalArgumentException e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
